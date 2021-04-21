@@ -1,10 +1,11 @@
 const http=require('http');
 const fs=require('fs');
+const querystring=require('querystring');
 var i=1;
 const server=http.createServer((req,res)=>{
 
     res.statusCode=200;
-
+    
     if(req.url=="/"){
         res.setHeader('Content-Type','text/html');
         var fsData=fs.readFileSync("form3.html");
@@ -25,13 +26,23 @@ const server=http.createServer((req,res)=>{
     }
     else if(req.url.slice(0,6)=="/input"){
         let url1=req.url.split("?");
-        let urlquery=url1[1].split("&");
-        let firstQuery=urlquery[0].split("=");
-        let secondQuery=urlquery[1].split("=");
-        
+        let obQuery=querystring.parse(url1[1]);
+        if(obQuery.submit1=="Save"){
+            fs.writeFile("./savefile",obQuery.name123+'\n',(err)=>{
+                if(err) console.log("Write file err!");
+                else console.log("Write file success!");
+            })
+        }
+        else{
+            fs.appendFile("./savefile",obQuery.name123+'\n',(err)=>{
+                if(err) console.log("Append file err!");
+                else console.log("Append file success!");
+            })
+        }
+
         res.setHeader('Content-Type','text/html');
-        res.write(firstQuery[1]+"<br>")
-        res.write(secondQuery[1]+"<br>")
+        res.write(obQuery.name123+"<br>")
+        res.write(obQuery.submit1+"<br>")
         res.end("Submit success!")
     }
     else{
